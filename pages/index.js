@@ -80,12 +80,33 @@
 
 // export default HomePage;
 
+import Head from "next/head";
+
 import MeetupList from "../components/meetups/MeetupList";
 import { MongoClient } from "mongodb";
 
-const DUMMY_MEETUPS = [
-  // ... your dummy meetups data ...
-];
+function HomePage(props) {
+  return (
+    <>
+      <Head>
+        <title>NextJs Meetup</title>
+        <meta name="description" content="Find highly reatctive meetups!" />
+      </Head>
+      <MeetupList meetups={props.meetups} />
+    </>
+  );
+}
+
+export async function getStaticProps() {
+  const meetups = await fetchMeetups();
+
+  return {
+    props: {
+      meetups: meetups,
+    },
+    revalidate: 1,
+  };
+}
 
 async function fetchMeetups() {
   const client = await MongoClient.connect(
@@ -110,25 +131,6 @@ async function fetchMeetups() {
   } finally {
     client.close();
   }
-}
-
-function HomePage(props) {
-  return (
-    <>
-      <MeetupList meetups={props.meetups} />
-    </>
-  );
-}
-
-export async function getStaticProps() {
-  const meetups = await fetchMeetups();
-
-  return {
-    props: {
-      meetups: meetups,
-    },
-    revalidate: 1,
-  };
 }
 
 export default HomePage;
